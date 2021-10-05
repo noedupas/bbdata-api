@@ -1,0 +1,94 @@
+version: '2'
+
+services:
+  cassandra:
+    build: ./cassandra
+    container_name: bbcassandra
+    networks:
+      - bb-network
+
+  zookeeper:
+    image: 'bitnami/zookeeper:3'
+    container_name: bbzookeeper
+    volumes:
+      - 'zookeeper_data:/bitnami'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    ports:
+      - '2181:2181'
+    networks:
+      - bb-network
+
+  kafka:
+    image: 'bitnami/kafka:2'
+    container_name: bbkafka
+    volumes:
+      - 'kafka_data:/bitnami'
+    command: >
+      bash -c "/opt/bitnami/kafka/bin/kafka-topics.sh --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 1  --topic bbdata2-augmented
+      && /opt/bitnami/kafka/bin/kafka-console-consumer.sh --bootstrap-server kafka:9092 --topic bbdata2-augmented"
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://127.0.0.1:9092
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    ports:
+      - '9092:9092'
+    networks:
+      - bb-network
+    depends_on:
+      - zookeeper
+
+  prometheus:
+    image: prom/prometheus
+    container_name: bbprometheus
+    # user: '1000'
+    volumes:
+      - ./monitoring/config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/data/prometheus:/prometheus
+    ports:
+      - '9090:9090'
+    networks:
+      - bb-network
+
+  grafana:
+    image: grafana/grafana
+    container_name: bbgrafana
+    # user: '1000'
+    volumes:
+      - ./monitoring/data/grafana:/var/lib/grafana
+    ports:
+      - '3000:3000'
+    networks:
+      - bb-network
+    depends_on:
+      - prometheus
+
+  mysql:
+    image: mysql:8.0.14
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_DATABASE: 'bbdata2'
+      MYSQL_USER: 'bbdata-admin'
+      MYSQL_PASS: 'bbdata'
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/sql:/docker-entrypoint-initdb.d
+    networks:
+      - bb-network
+
+  
+
+  
+
+networks:
+  bb-network:
+    driver: bridge
+
+volumes:
+  zookeeper_data:
+    driver: local
+  kafka_data:
+    driver: local
+  mysql_data:
+    driver: local
