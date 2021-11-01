@@ -1,59 +1,51 @@
-version: '2.1'
-
+version: "3"
 services:
 ### PROCESSING ###
   zookeeper:
-    image: confluentinc/cp-zookeeper:latest
-    #container_name: bbZooKeeper
+    image: 'bitnami/zookeeper:3.7'
+    container_name: bbZooKeeper
     environment:
-      ALLOW_ANONYMOUS_LOGIN: yes
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
+      - ALLOW_ANONYMOUS_LOGIN=yes
 
     ports:
       - '2181:2181'
     networks:
       - bb-processing-network
-    volumes:
-      - 'zookeeper_data:/bitnami'
-
-
-
+   
+      
   kafka:
-    image: confluentinc/cp-kafka:latest
-    depends_on:
-      - zookeeper
+    image: 'bitnami/kafka:3'
+    restart: always
     container_name: bbKafka
-    command: >
-      bash -c "/bin/kafka-topics --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 1  --topic bbdata2-augmented
-      && /bin/kafka-console-consumer --bootstrap-server kafka:9092 --topic bbdata2-augmented"
     environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    
     ports:
       - '9092:9092'
     networks:
+      - bb-processing-network  
+    depends_on:
+      - zookeeper
+
+
+  kafka-cli:
+    build: './components/kafka-cli/'
+    container_name: bbKafka-cli
+    environment:
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - WAIT_HOSTS=zookeeper:2181,kafka:9092
+
+    networks:
       - bb-processing-network
-    volumes:
-      - 'kafka_data:/bitnami'
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://zookeeper:2181"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+    depends_on:
+      - zookeeper
+      - kafka
 
 ### NETWORKS ###
 networks:
   bb-processing-network:
     driver: bridge
-
-volumes:
-  zookeeper_data:
-    driver: local
-  kafka_data:
-    driver: local

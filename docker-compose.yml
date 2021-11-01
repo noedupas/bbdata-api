@@ -1,72 +1,93 @@
-version: '2.1'
+version: '3'
 
 services:
 
   ### API ###
   spring:
     build: ./components/Spring
-    container_name: bbAPI
+    container_name: bbSpringAPI
+    environment:
+      - WAIT_HOSTS=zookeeper:2181,kafka:9092,cassandra:9042,mysql:3306
     networks: 
       - bb-network
+    depends_on:
+      - kafka
+      - cassandra
+      - mysql
+      - grafana
+
 
   ### DATABASES ### 
   cassandra:
     build: ./components/cassandra
     container_name: bbCassandra
+    volumes:
+      - .cassandra:/var/lib/cassandra
+    ports: 
+      - '9042:9042'
     networks:
       - bb-network
 
   mysql:
-    image: mysql:8.0.14
+    image: mysql:8
     container_name: bbMySQL
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: 'root'
-      MYSQL_DATABASE: 'bbdata2'
-      MYSQL_USER: 'bbdata-admin'
-      MYSQL_PASS: 'bbdata'
+      MYSQL_ROOT_PASSWORD: bbdata
+      MYSQL_USER: bbdata-admin
+      MYSQL_PASS: bbdata
+      MYSQL_DATABASE: bbdata2
+    command: --default-authentication-plugin=mysql_native_password
     volumes:
-      - mysql_data:/var/lib/mysql
+      - .mysql:/var/lib/mysql
       - ./components/mysql/sql:/docker-entrypoint-initdb.d
+    ports: 
+      - '3306:3306'
     networks:
       - bb-network
 
   ### PROCESSING ###
   zookeeper:
-    image: 'bitnami/zookeeper:3'
+    image: 'bitnami/zookeeper:3.7'
     container_name: bbZooKeeper
-    volumes:
-      - 'zookeeper_data:/bitnami'
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
     ports:
       - '2181:2181'
     networks:
       - bb-network
-
-  kafka:
-    image: 'bitnami/kafka:2'
-    container_name: bbKafka
     volumes:
-      - 'kafka_data:/bitnami'
-    command: >
-      bash -c "/opt/bitnami/kafka/bin/kafka-topics.sh --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 1  --topic bbdata2-augmented
-      && /opt/bitnami/kafka/bin/kafka-console-consumer.sh --bootstrap-server kafka:9092 --topic bbdata2-augmented"
+      - .zookeeper:/bitnami/zookeeper
+    
+  kafka:
+    image: 'bitnami/kafka:3'
+    restart: always
+    container_name: bbKafka
     environment:
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://127.0.0.1:9092
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
       - ALLOW_PLAINTEXT_LISTENER=yes
+    volumes:
+      - .kafka:/bitnami/kafka
     ports:
       - '9092:9092'
     networks:
-      - bb-network
+      - bb-network  
     depends_on:
       - zookeeper
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://zookeeper:2181"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+
+  kafka-cli:
+    build: './components/kafka-cli/'
+    container_name: bbKafka-cli
+    environment:
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - WAIT_HOSTS=zookeeper:2181,kafka:9092
+    networks:
+      - bb-network
+    depends_on:
+      - kafka
 
   ### MONITORING ###
   prometheus:
@@ -75,7 +96,7 @@ services:
     # user: '1000'
     volumes:
       - ./components/monitoring/config/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./components/monitoring/data/prometheus:/prometheus
+      - .prometheus:/prometheus
     ports:
       - '9090:9090'
     networks:
@@ -86,7 +107,7 @@ services:
     container_name: bbGrafana
     # user: '1000'
     volumes:
-      - ./components/monitoring/data/grafana:/var/lib/grafana
+      - .grafana:/var/lib/grafana
     ports:
       - '3000:3000'
     networks:
@@ -99,12 +120,3 @@ services:
 networks:
   bb-network:
     driver: bridge
-
-### VOLUMES ###
-volumes:
-  zookeeper_data:
-    driver: local
-  kafka_data:
-    driver: local
-  mysql_data:
-    driver: local
