@@ -1,0 +1,110 @@
+version: '2.1'
+
+services:
+
+  ### API ###
+  spring:
+    build: ./components/Spring
+    container_name: bbAPI
+    networks: 
+      - bb-network
+
+  ### DATABASES ### 
+  cassandra:
+    build: ./components/cassandra
+    container_name: bbCassandra
+    networks:
+      - bb-network
+
+  mysql:
+    image: mysql:8.0.14
+    container_name: bbMySQL
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_DATABASE: 'bbdata2'
+      MYSQL_USER: 'bbdata-admin'
+      MYSQL_PASS: 'bbdata'
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./components/mysql/sql:/docker-entrypoint-initdb.d
+    networks:
+      - bb-network
+
+  ### PROCESSING ###
+  zookeeper:
+    image: 'bitnami/zookeeper:3'
+    container_name: bbZooKeeper
+    volumes:
+      - 'zookeeper_data:/bitnami'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    ports:
+      - '2181:2181'
+    networks:
+      - bb-network
+
+  kafka:
+    image: 'bitnami/kafka:2'
+    container_name: bbKafka
+    volumes:
+      - 'kafka_data:/bitnami'
+    command: >
+      bash -c "/opt/bitnami/kafka/bin/kafka-topics.sh --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 1  --topic bbdata2-augmented
+      && /opt/bitnami/kafka/bin/kafka-console-consumer.sh --bootstrap-server kafka:9092 --topic bbdata2-augmented"
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://127.0.0.1:9092
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    ports:
+      - '9092:9092'
+    networks:
+      - bb-network
+    depends_on:
+      - zookeeper
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://zookeeper:2181"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  ### MONITORING ###
+  prometheus:
+    image: prom/prometheus
+    container_name: bbPrometheus
+    # user: '1000'
+    volumes:
+      - ./components/monitoring/config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./components/monitoring/data/prometheus:/prometheus
+    ports:
+      - '9090:9090'
+    networks:
+      - bb-network
+
+  grafana:
+    image: grafana/grafana
+    container_name: bbGrafana
+    # user: '1000'
+    volumes:
+      - ./components/monitoring/data/grafana:/var/lib/grafana
+    ports:
+      - '3000:3000'
+    networks:
+      - bb-network
+    depends_on:
+      - prometheus
+
+  
+### NETWORKS ###
+networks:
+  bb-network:
+    driver: bridge
+
+### VOLUMES ###
+volumes:
+  zookeeper_data:
+    driver: local
+  kafka_data:
+    driver: local
+  mysql_data:
+    driver: local

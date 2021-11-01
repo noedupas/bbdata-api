@@ -1,0 +1,5 @@
+### CASSANDRA ###
+cassandra/data
+
+### MONITORING ###
+monitoring/data

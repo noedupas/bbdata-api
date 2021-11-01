@@ -1,0 +1,59 @@
+version: '2.1'
+
+services:
+### PROCESSING ###
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    #container_name: bbZooKeeper
+    environment:
+      ALLOW_ANONYMOUS_LOGIN: yes
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+    ports:
+      - '2181:2181'
+    networks:
+      - bb-processing-network
+    volumes:
+      - 'zookeeper_data:/bitnami'
+
+
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    container_name: bbKafka
+    command: >
+      bash -c "/bin/kafka-topics --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 1  --topic bbdata2-augmented
+      && /bin/kafka-console-consumer --bootstrap-server kafka:9092 --topic bbdata2-augmented"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+    ports:
+      - '9092:9092'
+    networks:
+      - bb-processing-network
+    volumes:
+      - 'kafka_data:/bitnami'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://zookeeper:2181"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+### NETWORKS ###
+networks:
+  bb-processing-network:
+    driver: bridge
+
+volumes:
+  zookeeper_data:
+    driver: local
+  kafka_data:
+    driver: local
