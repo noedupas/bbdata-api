@@ -1,10 +1,5 @@
 # Container volumes
-.cassandra
-.grafana
-.kafka
-.mysql
-.prometheus
-.zookeeper
+.containers
 
 # ignoring MacOS Desktop Services Store files
 .DS_Store
