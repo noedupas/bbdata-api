@@ -1,0 +1,13 @@
+{
+  "name": "node-bb",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.8.7",
+    "express-session": "^1.7.6",
+    "http-proxy": "^1.14.0",
+    "request": "^2.7.4",
+    "express-bouncer": "^0.2.0",
+    "session-file-store": "^1.0.0",
+    "log4js": "^0.6.38"
+  }
+}

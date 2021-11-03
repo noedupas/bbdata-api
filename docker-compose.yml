@@ -7,14 +7,23 @@ services:
     build: ./components/Spring
     container_name: bbSpringAPI
     environment:
-      - WAIT_HOSTS=zookeeper:2181,kafka:9092,cassandra:9042,mysql:3306
+      WAIT_TIMEOUT: 150
+      WAIT_SLEEP_INTERVAL: 5
+      WAIT_HOSTS: zookeeper:2181,kafka:9092,cassandra:9042,mysql:3306
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/bbdata2?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      #SPRING_DATASOURCE_USERNAME: bbdata-admin
+      #SPRING_DATASOURCE_PASSWORD: bbdata
+      SPRING_DATA_CASSANDRA_CONTACT-POINTS: cassandra
+      SPRING_KAFKA_PRODUCER_BOOTSTRAP-SERVERS: kafka:9092
+      #MANAGEMENT_SERVER_PORT: 9999
+    ports: 
+      - '8080:8080'
     networks: 
       - bb-network
     depends_on:
       - kafka
       - cassandra
       - mysql
-      - grafana
 
 
   ### DATABASES ### 
@@ -33,9 +42,10 @@ services:
     container_name: bbMySQL
     restart: always
     environment:
+      LANG: C.UTF-8
       MYSQL_ROOT_PASSWORD: bbdata
       MYSQL_USER: bbdata-admin
-      MYSQL_PASS: bbdata
+      MYSQL_PASSWORD: bbdata
       MYSQL_DATABASE: bbdata2
     command: --default-authentication-plugin=mysql_native_password
     volumes:
@@ -51,7 +61,7 @@ services:
     image: 'bitnami/zookeeper:3.7'
     container_name: bbZooKeeper
     environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
+      ALLOW_ANONYMOUS_LOGIN: yes
     ports:
       - '2181:2181'
     networks:
@@ -64,11 +74,11 @@ services:
     restart: always
     container_name: bbKafka
     environment:
-      - KAFKA_BROKER_ID=1
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
-      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-      - ALLOW_PLAINTEXT_LISTENER=yes
+      KAFKA_BROKER_ID: 1
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+      ALLOW_PLAINTEXT_LISTENER: yes
     volumes:
       - .containers/kafka:/bitnami/kafka
     ports:
@@ -78,43 +88,27 @@ services:
     depends_on:
       - zookeeper
 
-  kafka-cli:
-    build: './components/kafka-cli/'
-    container_name: bbKafka-cli
-    environment:
-      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-      - WAIT_HOSTS=zookeeper:2181,kafka:9092
-    networks:
-      - bb-network
-    depends_on:
-      - kafka
-
-  ### MONITORING ###
-  # prometheus:
-  #   image: prom/prometheus
-  #   container_name: bbPrometheus
-  #   # user: '1000'
-  #   volumes:
-  #     - ./components/monitoring/config/prometheus.yml:/etc/prometheus/prometheus.yml
-  #     - prometheus:/prometheus
-  #   ports:
-  #     - '9090:9090'
-  #   networks:
-  #     - bb-network
-
-  # grafana:
-  #   image: grafana/grafana
-  #   container_name: bbGrafana
-  #   # user: '1000'
-  #   volumes:
-  #     - .grafana:/var/lib/grafana
-  #   ports:
-  #     - '3000:3000'
+  # kafka-cli:
+  #   build: './components/kafka-cli/'
+  #   container_name: bbKafka-cli
+  #   environment:
+  #     - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+  #     - WAIT_HOSTS=zookeeper:2181,kafka:9092
   #   networks:
   #     - bb-network
   #   depends_on:
-  #     - prometheus
+  #     - kafka
 
+  ### WEBAPP ###
+  nodejs:
+    build: ./components/admin-webapp
+    container_name: bbAdminWebApp
+    environment:
+      API_SERVER_HOST: http://spring:8080
+    ports:
+      - '8088:8088'
+    networks:
+      - bb-network
   
 ### NETWORKS ###
 networks:

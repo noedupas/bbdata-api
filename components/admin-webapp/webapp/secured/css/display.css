@@ -1,0 +1,84 @@
+/* *****************************************************************
+ * sidebar
+ * ****************************************************************/
+
+.ui.custom.sidebar {
+    width: 415px !important;
+    margin-left: -415px !important;
+}
+
+.ui.visible.custom.sidebar {
+    margin-left: 0px !important;
+}
+
+.ui.visible.right.custom.sidebar {
+    margin-left: -415px !important;  /* vs 265px */
+}
+
+.sidebar.visible ~ .pusher > #container {
+    padding-left: 60px;
+    padding-right: 20px;
+    transition: all .5s ease;
+}
+
+/* *****************************************************************
+ * other
+ * ****************************************************************/
+
+/*inputs*/
+.ui.input {
+    margin: 10px 0;
+}
+
+input {
+    margin-right: 6px !important;
+}
+
+/*== sticky ==*/
+
+/*below fixed menu + transition ease (graph) */
+.ui.sticky {
+    transition: all .3s ease-in-out;
+}
+
+.ui.sticky.fixed.top {
+    margin-top: 100px !important;
+}
+
+.ui.fixed.menu {
+    z-index: 1000;
+}
+
+/*==  daterangepicker  ==*/
+
+#datetimeForm input.ng-invalid:before {
+    font-family: FontAwesome;
+    content: "\f12a";
+    color: red;
+    padding-right: 4px;
+}
+
+input.ng-invalid {
+    border-color: red !important;
+}
+
+/*yaxis form*/
+
+#yaxisForm {
+    padding: 10px 0;
+}
+
+#yaxisForm .nbr {
+    padding: 10px 0;
+}
+
+#yaxisForm input {
+    width: 40%;
+}
+
+/*period sma input*/
+#periodInput {
+    width: 50px;
+    margin-left: 10px;
+
+}

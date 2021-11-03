@@ -1,47 +1,29 @@
-Suivi du projet
+Installation
 ==========
 
-Premier jour
-------------
+### Prerequisites
+* Docker
+* IntelliJ IDE with Kotlin support (if you want to edit the Spring project)
 
-- [X] Télécharger ce template, créer un nouveau dépôt Git pour votre projet (p.ex. "tb-super-website"), et pusher le tout sur Gitlab (info: si vous avez un compte "externe", vous n'avez pas les permissions nécessaires pour créer un dépôt, dans ce cas c'est votre superviseur qui le fera à votre place).
-- [X] Editer ce README et supprimer la première partie (cocher ces deux premières étapes en mettant un "x" entre les crochets, comme ça: [x])
-- [X] Faire une séance d'introduction avec votre superviseur
-- [X] Remplir les méta-données du projet ci-dessous (Voir [Nom du projet](#nom-du-projet))
-- [X] Donner les accès à mon dépôt Gitlab à mon/mes superviseur/s (dans le panneau à gauche `Settings/Members`)
+### Installation
+
+simply run `docker-compose up` on the root project folder and wait for all components to be ready. Then you can use http://localhost:8080 to interract with the BBData API.
+
+For IntelliJ, Open the project in IntelliJ and let it work. Once finished, you should be able to simply run the app by 
+launching the main class `ch.derlin.bbdata.BBDataApplication` (open it and right-click > run).
 
 
-**Ressources :** Si vous n'êtes pas à l'aise avec Git, Docker ou d'autres outils, des tutoriels se trouvent sur le dépôt [jacky.casas/basic-tutorials](https://gitlab.forge.hefr.ch/jacky.casas/basic-tutorials), jettez-y un oeil.
-
-
-Première semaine
-----------------
-
-- [X] Installer les logiciels requis sur votre ordinateur
-- [ ] Prendre en main les différentes technologies liées au projet
-- [ ] Rédiger le **cahier des charges** du projet (template disponible [ici](/docs/templates/CahierDesCharges-Template.docx))
-- [X] Prévoir une séance hebdomadaire avec votre superviseur. Après chaque séance, vous devrez **rédiger un PV** et le mettre dans le dépôt du projet `/docs/PVs/`. Un [template LaTeX](/docs/PVs/template/pv.tex) et un [template Word](/docs/PVs/template/PV-Template.docx) se trouvent dans le même dossier)
-- [X] Mettre son code dans le dossier `code/` et renseigner dans le fichier `code/README.md` la façon d'installer et de lancer votre code (tout doit y figurer pour qu'une personne lambda puisse installer votre logiciel depuis zéro)
-
-Une séance de présentation du cahier des charges sera organisée aux environs de la 2e semaine par votre superviseur (encore une fois, un [template](/docs/templates/Presentation-Template.pptx) existe).
-
-Une présentation finale sera également organisée en temps voulu.
-
-Voilà, vous êtes "onboardés" ! :)
-
---------------------------------------------------------------------------
 Offboarding
-===========
+==========
 
 Voici une check-list pour être sûr d'avoir tout déposé sur Gitlab avant la fin de votre projet. Si tout est coché, ça devrait être ok.
 
-- [ ] Tout le code se trouve dans le dossier `code/`
-- [ ] Le fichier `code/README.md` contient toutes les explications nécessaire pour l'installation et le lancement de mon code
-- [ ] Les PVs de toutes les séances se trouvent dans le dossier `docs/PVs/`
-- [ ] Le cachier des charges se trouve dans le dossier `docs/`
-- [ ] Les slides de la présentation du cahier des charges se trouve dans le dossier `docs/`
-- [ ] Le rapport final se trouve dans le dossier `docs/`
-- [ ] Les slides de la présentation finale du projet se trouvent dans le dossier `docs/`
+- [ ] Le fichier `README.md` contient toutes les explications nécessaire pour l'installation et le lancement de mon code
+- [ ] Les PVs de toutes les séances se trouvent sur Teams
+- [ ] Le cachier des charges se trouve sur Teams
+- [ ] Les slides de la présentation du cahier des charges se trouve sur Teams
+- [ ] Le rapport final se trouve sur Teams
+- [ ] Les slides de la présentation finale du projet se trouvent sur Teams
 - [ ] Une vidéo de démonstration de votre projet a été montée, envoyée à votre superviseur, et uploadée sur la [chaine Youtube de l'institut HumanTech](https://www.youtube.com/user/MISGchannel)
 - [ ] J'ai complété la [fiche d'évaluation](docs/supervision-evaluation.md) de mon superviseur afin de l'aider à s'améliorer
 - [ ] J'ai organisé un apéro de départ (optionnel, dépend de votre superviseur) ;)
@@ -49,7 +31,7 @@ Voici une check-list pour être sûr d'avoir tout déposé sur Gitlab avant la f
 
 --------------------------------------------------------------------------
 K8S-BBDATA - Kubernetization of a streaming data processing platform
-=============
+==========
 
 Projet de semestre 5 - 2021/2022
 ---------------

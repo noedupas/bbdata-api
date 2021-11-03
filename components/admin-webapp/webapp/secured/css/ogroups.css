@@ -1,0 +1,78 @@
+.list .item {
+    padding: 5px 2px;
+    margin-right: 10px;
+    /*border-color: rgba(251,189,8, .56); yellow*/
+    /*border-color: rgba(224,57,151, .56); pink*/
+}
+
+.ui.menu.perms {
+    border: none;
+    box-shadow: none;
+    font-size: .85714286rem;
+    line-height: 1;
+}
+
+
+.segments.tls, .segment.sls {
+    min-height: 70px;
+    padding: 10px !important;
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    margin-bottom: 10px !important;
+}
+
+.segments.tls {
+    padding: 20px !important;
+}
+
+.attached.label .title {
+    margin-left: 15px;
+}
+
+.move {
+    selectable: false;
+    cursor: move;
+}
+
+.as-sortable-item {
+    border: none;
+}
+.sls .as-sortable-item {
+    background-color: #efefef;
+}
+
+/* *****************************************************************
+ * objects list on the side
+ * ****************************************************************/
+
+
+#sidelist {
+    /* sticky sensor list */
+    position: fixed;
+    width: inherit;
+    max-width: 400px;
+    top: 150px;
+    bottom: 0;
+    overflow: auto;
+}
+
+dir-pagination-controls.ogroupsPage {
+    text-align: center;
+}
+
+dir-pagination-controls.ogroupsPage ul {
+    padding-left: 0;
+}
+
+.ogroupsPage ul.pagination li {
+    text-align: center;
+    display: inline-block;
+}
+.ogroupsPage ul.pagination li a{
+    display: inline-block;
+    width: 30px;
+}
+
+.ogroupsPage ul.pagination li.active a {
+    text-decoration: underline;
+    color: black;
+}

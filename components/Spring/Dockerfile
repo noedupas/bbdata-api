@@ -11,11 +11,5 @@ USER spring:spring
 # Copy JAR
 COPY ./bbdata-api-2.0.0-alpha.jar app.jar
 
-# Copy config
-COPY ./bbdata.properties /
-
-# Expose port on host
-EXPOSE 8080
-
-## Launch the wait tool and then your application --spring.config.location=file:/bbdata.properties
+## Launch the wait tool and then your application
 CMD /wait && java -jar /app.jar 

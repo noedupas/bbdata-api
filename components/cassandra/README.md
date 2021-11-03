@@ -11,23 +11,14 @@ In production, you only need the schema definition, that you can find in `bootst
 
 __Important__: if you change the structure or test data (`bootstrap_data/*.cql`), you need to rebuild the image !
 
-Build the image (see `docker-build.sh`):
-```bash
-docker build -t bbdata-cassandra .
-``` 
+Build or run the container with docker-compose on the root structure of the project:
 
-Launch the image (see `docker-start.sh`):
-```bash
- docker run --rm -p 9042:9042 --name bbcassandra bbdata-cassandra
-```
-or, *if you want to persist the data* between container runs, use:
-```bash
- docker run --rm -p 9042:9042 -v $PWD/data:/var/lib/cassandra --name bbcassandra bbdata-cassandra
-```
+* ```docker-compose build```
+* ```docker-compose up```
 
 Connect:
 ```bash
-docker exec -it bbcassandra cqlsh
+docker exec -it bbCassandra cqlsh
 ```
 
 If you want more information on how I fixed the problem of initializing the Cassandra container,

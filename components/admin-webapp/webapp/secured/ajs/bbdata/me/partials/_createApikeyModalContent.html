@@ -1,0 +1,37 @@
+<form name="form.addUserForm" novalidate>
+    <div class="ui form">
+
+        <!--expire-->
+        <div ng-show="!inputs.editMode" class="field">
+            <div><i>Format</i>: d-h-m-s. Example: 1h-40m, 3d... Leave blank for no expiration date.</div>
+            <div class="ui labeled input">
+                <div class="ui label">Expire</div>
+                <input type="text" ng-model="inputs.apikey.expirationDate">
+            </div>
+        </div>
+
+        <!--expirationDate-->
+        <div ng-show="inputs.editMode" class="field">
+            <div>In <b>UTC</b>. Leave blank for no expiration date.</div>
+            <div class="ui labeled input">
+                <div class="ui label">Expiration Date</div>
+                <input type="text" ng-model="inputs.apikey.expirationDate" placeholder="YYYY-mm-DDTHH:MM">
+            </div>
+            <div>Current expiration date in local time: {{inputs.checkDate(inputs.apikey.expirationDate)}}</div>
+        </div>
+
+        <!--read only-->
+        <div class="field">
+            <div class="ui checkbox">
+                <input type="checkbox" tabindex="0" ng-model="inputs.apikey.readOnly">
+                <label>Read Only</label>
+            </div>
+        </div>
+
+        <!--description-->
+        <div class="field">
+            <label>Description</label>
+            <textarea ng-model="inputs.apikey.description" rows="2"></textarea>
+        </div>
+    </div>
+</form>

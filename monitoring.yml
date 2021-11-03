@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  ### MONITORING ###
+  prometheus:
+    image: prom/prometheus
+    container_name: bbPrometheus
+    # user: '1000'
+    volumes:
+      - ./components/monitoring/config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - .containers/prometheus:/prometheus
+    ports:
+      - '9090:9090'
+    networks:
+      - bb-network
+
+  grafana:
+    image: grafana/grafana
+    container_name: bbGrafana
+    # user: '1000'
+    volumes:
+      - .containers/grafana:/var/lib/grafana
+    ports:
+      - '3000:3000'
+    networks:
+      - bb-network
+    depends_on:
+      - prometheus

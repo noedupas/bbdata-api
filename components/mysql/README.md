@@ -49,17 +49,12 @@ delimiter ;
 
 __Important__: if you change the structure or test data (`*.sql`), you need to rebuild the image !
 
-Build the image (see `docker-build.sh`):
-```bash
-docker build -t bbdata-mysql .
-``` 
+Build or run the container with docker-compose on the root structure of the project:
 
-Launch the image (see `docker-start.sh`):
-```bash
-docker run -p 3306:3306 --rm --name bbsql bbdata-mysql
-```
+* ```docker-compose build```
+* ```docker-compose up```
 
 Connect:
 ```bash
-mysql -h 127.0.0.1 -u bbdata-admin --password=bbdata bbdata2
+docker exec -it bbMySQL mysql -h 127.0.0.1 -u bbdata-admin --password=bbdata bbdata2
 ```
