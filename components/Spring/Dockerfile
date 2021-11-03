@@ -17,5 +17,5 @@ COPY ./bbdata.properties /
 # Expose port on host
 EXPOSE 8080
 
-## Launch the wait tool and then your application
-CMD /wait && java -jar /app.jar --spring.config.location=classpath:/bbdata.properties
+## Launch the wait tool and then your application --spring.config.location=file:/bbdata.properties
+CMD /wait && java -jar /app.jar 

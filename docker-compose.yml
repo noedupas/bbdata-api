@@ -22,7 +22,7 @@ services:
     build: ./components/cassandra
     container_name: bbCassandra
     volumes:
-      - .cassandra:/var/lib/cassandra
+      - .containers/cassandra:/var/lib/cassandra
     ports: 
       - '9042:9042'
     networks:
@@ -39,7 +39,7 @@ services:
       MYSQL_DATABASE: bbdata2
     command: --default-authentication-plugin=mysql_native_password
     volumes:
-      - .mysql:/var/lib/mysql
+      - .containers/mysql:/var/lib/mysql
       - ./components/mysql/sql:/docker-entrypoint-initdb.d
     ports: 
       - '3306:3306'
@@ -57,7 +57,7 @@ services:
     networks:
       - bb-network
     volumes:
-      - .zookeeper:/bitnami/zookeeper
+      - .containers/zookeeper:/bitnami/zookeeper
     
   kafka:
     image: 'bitnami/kafka:3'
@@ -70,7 +70,7 @@ services:
       - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
       - ALLOW_PLAINTEXT_LISTENER=yes
     volumes:
-      - .kafka:/bitnami/kafka
+      - .containers/kafka:/bitnami/kafka
     ports:
       - '9092:9092'
     networks:
@@ -90,30 +90,30 @@ services:
       - kafka
 
   ### MONITORING ###
-  prometheus:
-    image: prom/prometheus
-    container_name: bbPrometheus
-    # user: '1000'
-    volumes:
-      - ./components/monitoring/config/prometheus.yml:/etc/prometheus/prometheus.yml
-      - .prometheus:/prometheus
-    ports:
-      - '9090:9090'
-    networks:
-      - bb-network
+  # prometheus:
+  #   image: prom/prometheus
+  #   container_name: bbPrometheus
+  #   # user: '1000'
+  #   volumes:
+  #     - ./components/monitoring/config/prometheus.yml:/etc/prometheus/prometheus.yml
+  #     - prometheus:/prometheus
+  #   ports:
+  #     - '9090:9090'
+  #   networks:
+  #     - bb-network
 
-  grafana:
-    image: grafana/grafana
-    container_name: bbGrafana
-    # user: '1000'
-    volumes:
-      - .grafana:/var/lib/grafana
-    ports:
-      - '3000:3000'
-    networks:
-      - bb-network
-    depends_on:
-      - prometheus
+  # grafana:
+  #   image: grafana/grafana
+  #   container_name: bbGrafana
+  #   # user: '1000'
+  #   volumes:
+  #     - .grafana:/var/lib/grafana
+  #   ports:
+  #     - '3000:3000'
+  #   networks:
+  #     - bb-network
+  #   depends_on:
+  #     - prometheus
 
   
 ### NETWORKS ###
