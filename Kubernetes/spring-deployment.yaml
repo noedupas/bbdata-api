@@ -1,0 +1,40 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.16.0 (0c01309)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: spring
+  name: spring
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: spring
+    spec:
+      containers:
+      - env:
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:mysql://mysql:3306/bbdata2?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&allowPublicKeyRetrieval=true&serverTimezone=UTC
+        - name: SPRING_DATA_CASSANDRA_CONTACT-POINTS
+          value: cassandra
+        - name: SPRING_KAFKA_PRODUCER_BOOTSTRAP-SERVERS
+          value: kafka:9092
+        - name: WAIT_HOSTS
+          value: zookeeper:2181,kafka:9092,cassandra:9042,mysql:3306
+        - name: WAIT_SLEEP_INTERVAL
+          value: "5"
+        - name: WAIT_TIMEOUT
+          value: "150"
+        image: spring
+        name: bbSpringAPI
+        ports:
+        - containerPort: 8080
+        resources: {}
+      restartPolicy: Always
+status: {}

@@ -1,0 +1,30 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.16.0 (0c01309)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: nodejs
+  name: nodejs
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: nodejs
+    spec:
+      containers:
+      - env:
+        - name: API_SERVER_HOST
+          value: http://spring:8080
+        image: nodejs
+        name: bbAdminWebApp
+        ports:
+        - containerPort: 8088
+        resources: {}
+      restartPolicy: Always
+status: {}

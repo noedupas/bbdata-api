@@ -4,7 +4,7 @@ services:
 
   ### API ###
   spring:
-    build: ./components/Spring
+    image: bukibarak/bbdata-spring:latest
     container_name: bbSpringAPI
     environment:
       WAIT_TIMEOUT: 150
@@ -16,9 +16,9 @@ services:
       SPRING_DATA_CASSANDRA_CONTACT-POINTS: cassandra
       SPRING_KAFKA_PRODUCER_BOOTSTRAP-SERVERS: kafka:9092
       #MANAGEMENT_SERVER_PORT: 9999
-    ports: 
+    ports:
       - '8080:8080'
-    networks: 
+    networks:
       - bb-network
     depends_on:
       - kafka
@@ -26,7 +26,7 @@ services:
       - mysql
 
 
-  ### DATABASES ### 
+  ### DATABASES ###
   cassandra:
     build: ./components/cassandra
     container_name: bbCassandra
@@ -34,6 +34,19 @@ services:
       - .containers/cassandra:/var/lib/cassandra
     networks:
       - bb-network
+  # cassandra:
+  #   image: bitnami/cassandra:3.11
+  #   container_name: bbCassandra
+  #   environment:
+  #     - CASSANDRA_SEEDS=cassandra
+  #     - CASSANDRA_PASSWORD_SEEDER=yes
+  #     - CASSANDRA_PASSWORD=cassandra
+  #     - BITNAMI_DEBUG=1
+  #   volumes:
+  #     - .containers/cassandra:/var/lib/cassandra
+  #     - ./components/cassandra/bootstrap_data:/docker-entrypoint-initdb.d
+  #   networks:
+  #     - bb-network
 
   mysql:
     image: mysql:8
@@ -54,7 +67,7 @@ services:
 
   ### PROCESSING ###
   zookeeper:
-    image: 'bitnami/zookeeper:3.7'
+    image: bitnami/zookeeper:3.7
     container_name: bbZooKeeper
     environment:
       ALLOW_ANONYMOUS_LOGIN: "yes"
@@ -62,9 +75,9 @@ services:
       - bb-network
     volumes:
       - .containers/zookeeper:/bitnami/zookeeper
-    
+
   kafka:
-    image: 'bitnami/kafka:3'
+    image: bitnami/kafka:3
     restart: always
     container_name: bbKafka
     environment:
@@ -77,7 +90,7 @@ services:
     volumes:
       - .containers/kafka:/bitnami/kafka
     networks:
-      - bb-network  
+      - bb-network
     depends_on:
       - zookeeper
 
@@ -94,7 +107,7 @@ services:
 
   ### WEBAPP ###
   nodejs:
-    build: ./components/admin-webapp
+    image: bukibarak/bbdata-webapp:latest
     container_name: bbAdminWebApp
     environment:
       API_SERVER_HOST: http://spring:8080
@@ -102,7 +115,7 @@ services:
       - '8088:8088'
     networks:
       - bb-network
-  
+
 ### NETWORKS ###
 networks:
   bb-network:

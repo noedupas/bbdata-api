@@ -9,7 +9,8 @@ RUN npm install
 # use --production for production
 
 # Bundle app source
-COPY . .
+COPY log4js.json server.js ./
+COPY webapp ./webapp
 
 # Run server
 CMD [ "node", "server.js" ]
