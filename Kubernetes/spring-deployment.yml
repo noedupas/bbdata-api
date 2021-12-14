@@ -1,40 +1,40 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    kompose.cmd: kompose convert
-    kompose.version: 1.16.0 (0c01309)
-  creationTimestamp: null
-  labels:
-    io.kompose.service: spring
   name: spring
 spec:
+  selector:
+    matchLabels:
+      app: spring
   replicas: 1
-  strategy: {}
+  strategy:
+    type: Recreate
   template:
     metadata:
-      creationTimestamp: null
       labels:
-        io.kompose.service: spring
+        app: spring
     spec:
       containers:
-      - env:
+      - image: bukibarak/bbdata-spring:latest
+        name: spring
+        env:
         - name: SPRING_DATASOURCE_URL
           value: jdbc:mysql://mysql:3306/bbdata2?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&allowPublicKeyRetrieval=true&serverTimezone=UTC
         - name: SPRING_DATA_CASSANDRA_CONTACT-POINTS
-          value: cassandra
+          value: cluster1-dc1-service.cass-operator
+        - name: SPRING_DATA_CASSANDRA_USERNAME
+          value: cluster1-superuser
+        - name: SPRING_DATA_CASSANDRA_PASSWORD
+          value: BT-Wa4wC1iZKZyw_qsoAqECIphAA98D1jBsXLfyd3FN7yY4cWjl5JA
         - name: SPRING_KAFKA_PRODUCER_BOOTSTRAP-SERVERS
-          value: kafka:9092
+          value: my-cluster-kafka-bootstrap.kafka:9092
         - name: WAIT_HOSTS
-          value: zookeeper:2181,kafka:9092,cassandra:9042,mysql:3306
+          value: cluster1-dc1-service.cass-operator:9042,my-cluster-kafka-bootstrap.kafka:9092,mysql:3306 # MYSQL OK
         - name: WAIT_SLEEP_INTERVAL
           value: "5"
         - name: WAIT_TIMEOUT
           value: "150"
-        image: spring
-        name: bbSpringAPI
         ports:
         - containerPort: 8080
-        resources: {}
+          name: spring
       restartPolicy: Always
-status: {}
