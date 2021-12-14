@@ -13,7 +13,7 @@ spec:
   size: 3
   storageConfig:
     cassandraDataVolumeClaimSpec:
-      storageClassName: XXXXXX
+      storageClassName: local-path
       accessModes:
         - ReadWriteOnce
       resources:
