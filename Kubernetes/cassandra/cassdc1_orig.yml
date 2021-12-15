@@ -3,7 +3,7 @@
 apiVersion: cassandra.datastax.com/v1beta1
 kind: CassandraDatacenter
 metadata:
-  name: dc1
+  name: datacenter1
 spec:
   clusterName: cluster1
   serverType: cassandra
@@ -30,5 +30,5 @@ spec:
       max_direct_memory: "800M"
       additional-jvm-opts:
         # As the database comes up for the first time, set system keyspaces to RF=3
-        - "-Ddse.system_distributed_replication_dc_names=dc1"
+        - "-Ddse.system_distributed_replication_dc_names=datacenter1"
         - "-Ddse.system_distributed_replication_per_dc=3"

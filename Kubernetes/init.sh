@@ -34,12 +34,7 @@ echo "===================       STARTING CASSANDRA       ==================="
 echo "=================== CASSANDRA DONE, STARTING KAFKA ==================="
 ./kafka/init.sh
 echo "===================   KAFKA DONE, STARTING MYSQL   ==================="
-kubectl apply -f mysql-deployment.yml
-NAME=$(kubectl get pods -l app=mysql -o "jsonpath={.items[0].metadata.name}")
-kubectl wait --for=condition=ready pod $NAME
+./mysql/init.sh
 echo "===================   MYSQL DONE, STARTING SPRING   ==================="
-kubectl apply -f spring-deployment.yml
-NAME=$(kubectl get pods -l app=spring -o "jsonpath={.items[0].metadata.name}")
-kubectl wait --for=condition=ready pod $NAME
-kubectl apply -f spring-service.yml
+./spring/init.sh
 echo "===================      SPRING DONE, ALL DONE      ==================="

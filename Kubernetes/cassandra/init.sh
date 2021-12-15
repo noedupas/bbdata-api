@@ -29,11 +29,11 @@ sed -i "s/XXXXXX/$SCNAME/" "$SCRIPTPATH/cassdc1.yml"
 kubectl -n cass-operator apply -f "$SCRIPTPATH/cassdc1.yml"
 echo "============================"
 
-export STATUS="XXXXX"
+export STATUS="XXXXXX"
 while [[ $STATUS != "Ready" ]]
 do
     sleep 5
-    STATUS=$(kubectl -n cass-operator get cassdc/dc1 -o "jsonpath={.status.cassandraOperatorProgress}")
+    STATUS=$(kubectl -n cass-operator get cassdc/datacenter1 -o "jsonpath={.status.cassandraOperatorProgress}")
     echo $STATUS
 done
 echo "============================"
@@ -47,19 +47,19 @@ echo "============================"
 
 
 export OPERATION="CREATE SCHEMA bbdata2 WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 3 };"
-kubectl -n cass-operator exec -ti cluster1-dc1-default-sts-0 -c cassandra -- sh -c "cqlsh -u '$CASS_USER' -p '$CASS_PASS' -e \"$OPERATION\""
+kubectl -n cass-operator exec -ti cluster1-datacenter1-default-sts-0 -c cassandra -- sh -c "cqlsh -u '$CASS_USER' -p '$CASS_PASS' -e \"$OPERATION\""
 echo "============================"
 OPERATION="CREATE TABLE bbdata2.raw_values (object_id int, timestamp timestamp, comment text, month text, value text, PRIMARY KEY ((object_id, month), timestamp)) WITH CLUSTERING ORDER BY (timestamp ASC);"
-kubectl -n cass-operator exec -ti cluster1-dc1-default-sts-0 -c cassandra -- sh -c "cqlsh -u '$CASS_USER' -p '$CASS_PASS' -e \"$OPERATION\""
+kubectl -n cass-operator exec -ti cluster1-datacenter1-default-sts-0 -c cassandra -- sh -c "cqlsh -u '$CASS_USER' -p '$CASS_PASS' -e \"$OPERATION\""
 echo "============================"
 OPERATION="CREATE TABLE bbdata2.aggregations (minutes int, object_id int, date text, timestamp timestamp, last float, last_ts bigint, min float, max float, sum float, mean float, count int, k float, k_sum float, k_sum_2 float, std float, PRIMARY KEY ((minutes, object_id, date), timestamp)) WITH CLUSTERING ORDER BY (timestamp DESC);"
-kubectl -n cass-operator exec -ti cluster1-dc1-default-sts-0 -c cassandra -- sh -c "cqlsh -u '$CASS_USER' -p '$CASS_PASS' -e \"$OPERATION\""
+kubectl -n cass-operator exec -ti cluster1-datacenter1-default-sts-0 -c cassandra -- sh -c "cqlsh -u '$CASS_USER' -p '$CASS_PASS' -e \"$OPERATION\""
 echo "============================"
 OPERATION="CREATE TABLE bbdata2.objects_stats_counter (object_id int, n_reads counter, n_values counter, PRIMARY KEY (object_id));"
-kubectl -n cass-operator exec -ti cluster1-dc1-default-sts-0 -c cassandra -- sh -c "cqlsh -u '$CASS_USER' -p '$CASS_PASS' -e \"$OPERATION\""
+kubectl -n cass-operator exec -ti cluster1-datacenter1-default-sts-0 -c cassandra -- sh -c "cqlsh -u '$CASS_USER' -p '$CASS_PASS' -e \"$OPERATION\""
 echo "============================"
 OPERATION="CREATE TABLE bbdata2.objects_stats (object_id int, avg_sample_period float, last_ts timestamp, PRIMARY KEY (object_id));"
-kubectl -n cass-operator exec -ti cluster1-dc1-default-sts-0 -c cassandra -- sh -c "cqlsh -u '$CASS_USER' -p '$CASS_PASS' -e \"$OPERATION\""
+kubectl -n cass-operator exec -ti cluster1-datacenter1-default-sts-0 -c cassandra -- sh -c "cqlsh -u '$CASS_USER' -p '$CASS_PASS' -e \"$OPERATION\""
 echo "============================"
 
-# IP: cluster1-dc1-service ?? https://github.com/k8ssandra/cass-operator/blob/master/docs/user/README.md
+# IP: cluster1-datacenter1-service ?? https://github.com/k8ssandra/cass-operator/blob/master/docs/user/README.md
