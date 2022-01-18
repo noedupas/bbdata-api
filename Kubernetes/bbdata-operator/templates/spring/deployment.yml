@@ -6,7 +6,7 @@ spec:
   selector:
     matchLabels:
       app: spring
-  replicas: 1
+  replicas: BBDATA_REPLICA_SIZE #will be modified by the deployment script
   strategy:
     type: Recreate
   template:
@@ -23,13 +23,13 @@ spec:
         - name: SPRING_DATA_CASSANDRA_CONTACT-POINTS
           value: cluster1-datacenter1-service.cass-operator
         - name: SPRING_DATA_CASSANDRA_USERNAME
-          value: cluster1-superuser
+          value: CASS_USERNAME #will be modified by the deployment script
         - name: SPRING_DATA_CASSANDRA_PASSWORD
-          value: iBKkf6QZ66nmN67j4Fd-BIuzWcgN9XWqIsJxVf5KHeHVI2BEe2lEOA
+          value: CASS_PASSWORD #will be modified by the deployment script
         - name: SPRING_KAFKA_PRODUCER_BOOTSTRAP-SERVERS
           value: my-cluster-kafka-bootstrap.kafka:9092
         - name: WAIT_HOSTS
-          value: cluster1-datacenter1-service.cass-operator:9042,my-cluster-kafka-bootstrap.kafka:9092,mysql:3306 # MYSQL OK
+          value: cluster1-datacenter1-service.cass-operator:9042,my-cluster-kafka-bootstrap.kafka:9092,mysql:3306
         - name: WAIT_SLEEP_INTERVAL
           value: "5"
         - name: WAIT_TIMEOUT

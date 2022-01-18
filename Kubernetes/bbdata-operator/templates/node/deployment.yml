@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodejs
+spec:
+  selector:
+    matchLabels:
+      app: nodejs
+  replicas: WEBAPP_REPLICA_SIZE
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: nodejs
+    spec:
+      containers:
+      - image: bukibarak/bbdata-webapp:latest
+        name: nodejs
+        env:
+        - name: API_SERVER_HOST
+          value: http://spring:8080
+        ports:
+        - containerPort: 8088
+      restartPolicy: Always

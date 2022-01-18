@@ -27,7 +27,7 @@ then
     fi
 fi
 
-k3d cluster create myCluster -p "8080:30080@agent:0" -a 3
+k3d cluster create myCluster -p "8080-8088:30080-30088@agent:0" -a 3
 
 echo "===================       STARTING CASSANDRA       ==================="
 ./cassandra/init.sh
@@ -37,4 +37,6 @@ echo "===================   KAFKA DONE, STARTING MYSQL   ==================="
 ./mysql/init.sh
 echo "===================   MYSQL DONE, STARTING SPRING   ==================="
 ./spring/init.sh
-echo "===================      SPRING DONE, ALL DONE      ==================="
+echo "================     SPRING DONE, STARTING WEBAPP      ==============="
+./node/init.sh
+echo "===================      WEBAPP DONE, ALL DONE      =================="
