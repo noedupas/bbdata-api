@@ -1,8 +1,8 @@
-apiVersion: "stable.bukibarak.ch/v1"
+apiVersion: "bukibarak.ch/v1"
 kind: BBData
 metadata:
-  name: test-bbdata
+  name: bbdata
 spec:
   defaultReplica: 1
-  cassandraReplica: 2
+  #cassandraReplica: 2
   cassandraStorageClass: "local-path"

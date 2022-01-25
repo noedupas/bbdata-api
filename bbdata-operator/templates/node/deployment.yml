@@ -39,3 +39,4 @@ spec:
       targetPort: 8088
   selector:
     app: nodejs
+  type: NodePort

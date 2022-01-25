@@ -14,9 +14,6 @@ sed -i "s/CASS_USERNAME/$CASS_USER/" "$FILEPATH/deployment.yml"
 sed -i "s/CASS_PASSWORD/$CASS_PASS/" "$FILEPATH/deployment.yml"
 
 # Deploy the Spring BBData API and wait for it to be ready
-kubectl apply -f "$FILEPATH/deployment.yml"
-NAME=$(kubectl get pods -l app=spring -o "jsonpath={.items[0].metadata.name}")
-kubectl wait --for=condition=ready pod $NAME
-
-# Deploy the Spring service
-kubectl apply -f "$FILEPATH/service.yml"
+kubectl -n bbdata apply -f "$FILEPATH/deployment.yml"
+NAME=$(kubectl -n bbdata get pods -l app=spring -o "jsonpath={.items[0].metadata.name}")
+kubectl -n bbdata wait --for=condition=ready pod $NAME

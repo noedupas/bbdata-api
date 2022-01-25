@@ -1,14 +1,21 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bbdata-operator
+
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: bbdata-operator-acc
+  namespace: bbdata-operator
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: access-all-ressources
+  namespace: bbdata-operator
 rules:
 - apiGroups: ["*"]
   resources: ["*"]
@@ -19,6 +26,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: access-all-ressources
+  namespace: bbdata-operator
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -32,17 +40,12 @@ subjects:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
-  # name must match the spec fields below, and be in the form: <plural>.<group>
-  name: bbdata.stable.bukibarak.ch
+  name: bbdata.bukibarak.ch
 spec:
-  # group name to use for REST API: /apis/<group>/<version>
-  group: stable.bukibarak.ch
-  # list of versions supported by this CustomResourceDefinition
+  group: bukibarak.ch
   versions:
     - name: v1
-      # Each version can be enabled/disabled by Served flag.
       served: true
-      # One and only one version must be marked as the storage version.
       storage: true
       schema:
         openAPIV3Schema:
@@ -61,24 +64,18 @@ spec:
                   type: integer
                 cassandraStorageClass:
                   type: string
-  # either Namespaced or Cluster
   scope: Namespaced
   names:
-    # plural name to be used in the URL: /apis/<group>/<version>/<plural>
     plural: bbdata
-    # singular name to be used as an alias on the CLI and for display
     singular: bbdata
-    # kind is normally the CamelCased singular type. Your resource manifests use this.
     kind: BBData
-    # shortNames allow shorter string to match your resource on the CLI
-    # shortNames:
-    # - ct
 
 ---
 apiVersion: v1
 kind: Pod
 metadata:
   name: bbdata-operator
+  namespace: bbdata-operator
 spec:
   containers:
   - name: bbdata-operator
