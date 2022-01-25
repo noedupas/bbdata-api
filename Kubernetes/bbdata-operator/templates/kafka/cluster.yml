@@ -25,10 +25,10 @@ spec:
     storage:
       type: jbod
       volumes:
-      - id: 0
-        type: persistent-claim
-        size: 100Gi
-        deleteClaim: false
+        - id: 0
+          type: persistent-claim
+          size: 100Gi
+          deleteClaim: false
   zookeeper:
     replicas: KAFKA_REPLICA_SIZE #will be modified by the deployment script
     storage:

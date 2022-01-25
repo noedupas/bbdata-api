@@ -19,7 +19,7 @@ spec:
       resources:
         requests:
           storage: 5Gi
-  config:    
+  config:
     cassandra-yaml:
       authenticator: org.apache.cassandra.auth.PasswordAuthenticator
       authorizer: org.apache.cassandra.auth.CassandraAuthorizer

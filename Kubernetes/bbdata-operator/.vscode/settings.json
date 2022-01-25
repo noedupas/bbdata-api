@@ -1,0 +1,5 @@
+{
+    "yaml.schemas": {
+        "https://json.schemastore.org/kustomization.json": "file:///d%3A/CEDRIC.MUJYNYA/BBData/git/Kubernetes/bbdata-operator/templates/kafka/cluster.yml"
+    }
+}

@@ -12,6 +12,7 @@ spec:
     - ReadWriteOnce
   hostPath:
     path: "/mnt/data"
+
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -24,16 +25,7 @@ spec:
   resources:
     requests:
       storage: 20Gi
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: mysql
-spec:
-  ports:
-  - port: 3306
-  selector:
-    app: mysql
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -51,34 +43,46 @@ spec:
         app: mysql
     spec:
       containers:
-      - image: mysql:8
-        name: mysql
-        env:
-        - name: LANG
-          value: C.UTF-8
-        - name: MYSQL_ROOT_PASSWORD
-          value: bbdata
-        - name: MYSQL_USER
-          value: bbdata-admin
-        - name: MYSQL_PASSWORD
-          value: bbdata
-        - name: MYSQL_DATABASE
-          value: bbdata2
-        ports:
-        - containerPort: 3306
+        - image: mysql:8
           name: mysql
-        volumeMounts:
-        - name: mysql-persistent-storage
-          mountPath: /var/lib/mysql
-        - name: mysql-initdb
-          mountPath: /docker-entrypoint-initdb.d
+          env:
+            - name: LANG
+              value: C.UTF-8
+            - name: MYSQL_ROOT_PASSWORD
+              value: bbdata
+            - name: MYSQL_USER
+              value: bbdata-admin
+            - name: MYSQL_PASSWORD
+              value: bbdata
+            - name: MYSQL_DATABASE
+              value: bbdata2
+          ports:
+            - containerPort: 3306
+              name: mysql
+          volumeMounts:
+            - name: mysql-persistent-storage
+              mountPath: /var/lib/mysql
+            - name: mysql-initdb
+              mountPath: /docker-entrypoint-initdb.d
       volumes:
-      - name: mysql-persistent-storage
-        persistentVolumeClaim:
-          claimName: mysql-pv-claim
-      - name: mysql-initdb
-        configMap:
-          name: mysql-initdb-config
+        - name: mysql-persistent-storage
+          persistentVolumeClaim:
+            claimName: mysql-pv-claim
+        - name: mysql-initdb
+          configMap:
+            name: mysql-initdb-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+spec:
+  ports:
+    - port: 3306
+  selector:
+    app: mysql
+
 ---
 apiVersion: v1
 kind: ConfigMap

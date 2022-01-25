@@ -6,7 +6,7 @@ spec:
   selector:
     matchLabels:
       app: nodejs
-  replicas: WEBAPP_REPLICA_SIZE
+  replicas: 1
   strategy:
     type: Recreate
   template:
@@ -15,11 +15,27 @@ spec:
         app: nodejs
     spec:
       containers:
-      - image: bukibarak/bbdata-webapp:latest
-        name: nodejs
-        env:
-        - name: API_SERVER_HOST
-          value: http://spring:8080
-        ports:
-        - containerPort: 8088
+        - image: bukibarak/bbdata-webapp:latest
+          name: nodejs
+          env:
+            - name: API_SERVER_HOST
+              value: http://spring:8080
+          ports:
+            - containerPort: 8088
       restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: nodejs
+  name: nodejs
+spec:
+  ports:
+    - name: "8088"
+      nodePort: 30088
+      port: 8088
+      targetPort: 8088
+  selector:
+    app: nodejs
