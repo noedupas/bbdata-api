@@ -36,29 +36,31 @@ kubectl -n cass-operator wait --for=condition=ready pod $NAME
 kubectl apply -k github.com/k8ssandra/cass-operator/config/deployments/cluster
 
 # Change values in the dc1 file to the env variable given values
-sed -i "s/CASS_REPLICA_SIZE/$CASSANDRA_REPLICA_SET/" "$FILEPATH/dc1.yml"
-sed -i "s/CASS_SC_NAME/$CASSANDRA_STORAGECLASS_NAME/" "$FILEPATH/dc1.yml"
+cp "$FILEPATH/dc1.yml" "$FILEPATH/dc1_deploy.yml"
+sed -i "s/CASS_REPLICA_SIZE/$CASSANDRA_REPLICA_SET/" "$FILEPATH/dc1_deploy.yml"
+sed -i "s/CASS_SC_NAME/$CASSANDRA_STORAGECLASS_NAME/" "$FILEPATH/dc1_deploy.yml"
 
 # Deploy the cassandra datacenter and wait for it to be ready. THIS ACTION MAY TAKE VERY LONG TIME
-kubectl -n cass-operator apply -f "$FILEPATH/dc1.yml"
+kubectl -n $namespace apply -f "$FILEPATH/dc1_deploy.yml"
 
 export STATUS="Unknown"
 while [[ $STATUS != "Ready" ]]
 do
     sleep 5
-    STATUS=$(kubectl -n cass-operator get cassdc/datacenter1 -o "jsonpath={.status.cassandraOperatorProgress}")
+    STATUS=$(kubectl -n $namespace get cassdc/datacenter1 -o "jsonpath={.status.cassandraOperatorProgress}")
     echo "Waiting for cassandra datacenter deployment - Status: $STATUS"
 done
 echo "Done !"
 
 # Get the cassandra user, password and host
-CASS_USER=$(kubectl -n cass-operator get secret cluster1-superuser -o "jsonpath={.data.username}" | base64 -d)
-CASS_PASS=$(kubectl -n cass-operator get secret cluster1-superuser -o "jsonpath={.data.password}" | base64 -d)
-CASS_HOST=$(kubectl -n cass-operator get services -o "jsonpath={.items[1].metadata.name}")
+CASS_USER=$(kubectl -n $namespace get secret cluster1-superuser -o "jsonpath={.data.username}" | base64 -d)
+CASS_PASS=$(kubectl -n $namespace get secret cluster1-superuser -o "jsonpath={.data.password}" | base64 -d)
+CASS_HOST=$(kubectl -n $namespace get services -o "jsonpath={.items[1].metadata.name}")
 
 # Deploy the cassandra shema to the host in order to create the BBData database structure
-sed -i "s/USER_VALUE/$CASS_USER/" "$FILEPATH/schema.yml"
-sed -i "s/PASS_VALUE/$CASS_PASS/" "$FILEPATH/schema.yml"
-sed -i "s/HOST_VALUE/$CASS_HOST/" "$FILEPATH/schema.yml"
-kubectl -n cass-operator apply -f "$FILEPATH/schema.yml"
-kubectl -n cass-operator wait --for=condition=complete job/schema
+cp "$FILEPATH/schema.yml" "$FILEPATH/schema_deploy.yml"
+sed -i "s/USER_VALUE/$CASS_USER/" "$FILEPATH/schema_deploy.yml"
+sed -i "s/PASS_VALUE/$CASS_PASS/" "$FILEPATH/schema_deploy.yml"
+sed -i "s/HOST_VALUE/$CASS_HOST/" "$FILEPATH/schema_deploy.yml"
+kubectl -n $namespace apply -f "$FILEPATH/schema_deploy.yml"
+kubectl -n $namespace wait --for=condition=complete job/schema

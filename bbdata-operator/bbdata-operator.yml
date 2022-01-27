@@ -64,6 +64,10 @@ spec:
                   type: integer
                 cassandraStorageClass:
                   type: string
+                bbdataNodePort:
+                  type: integer
+                webappNodePort:
+                  type: integer
   scope: Namespaced
   names:
     plural: bbdata

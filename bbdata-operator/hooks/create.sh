@@ -11,22 +11,20 @@ kubernetes:
 EOF
 else
     type=$(jq -c -r '.[0].type' $BINDING_CONTEXT_PATH)
-    specs=""
 
-    # Get the CRD specs depending on the ressource type
-    if [[ $type == "Synchronization" ]] ; then # In case the ressource watched is created before the script, might delete for production
-      specs=$(jq -c -r '.[0].objects[0].object.spec' $BINDING_CONTEXT_PATH)
-    elif [[ $type == "Event" ]] ; then
+    if [[ $type == "Event" ]] ; then
+      # Get the CRD specs and namespace
       specs=$(jq -c -r '.[0].object.spec' $BINDING_CONTEXT_PATH)
-    fi
+      export namespace=$(jq -c -r '.[0].object.metadata.namespace' $BINDING_CONTEXT_PATH)
 
-    if [[ $specs != "" && $specs != "null" ]] ; then
-      # Check if BBData is already deployed
-      status=$(kubectl -n bbdata-operator get pod bbdata-operator -o "jsonpath={.metadata.annotations.status}")
-      if [[ $status != "" && $status != "Not deployed" ]] ; then
-        echo "An other instance of BBData is already deployed with this operator. You can only deploy 1 BBData application."
+      # Check if there is already a BBData instance deployed in the same namespace and exit if it's the case
+      amount=$(kubectl -n $namespace get BBData -o "jsonpath={.items}" | jq length)
+      if [[ $amount -gt 1 ]] ; then # 1 is because the BBData CRD who will be deployed is counted as well
+        echo "There is already a BBData application deployed in the namespace $namespace. Please deploy the application in an other Kubernetes namespace."
         exit 0
       fi
+
+      # Update or set the status annotation
       kubectl -n bbdata-operator annotate pods bbdata-operator status="Initialize deployment" --overwrite=true
 
       # Set the env variables used in the subscripts
@@ -55,8 +53,15 @@ else
         export BBDATA_REPLICA_SET=$DEFAULT_REPLICA_SET
       fi
 
-      # Create the namespace for BBData "custom" components (MySQL, Spring and Node.js)
-      kubectl create namespace bbdata
+      export BBDATA_NODE_PORT=$(jq -c '.bbdataNodePort'  <<< $specs)
+      if [[ $BBDATA_NODE_PORT == "null" ]] || ! [[ $BBDATA_NODE_PORT =~ ^[0-9]+$ ]] ; then
+        export BBDATA_NODE_PORT=30080
+      fi
+
+      export WEBAPP_NODE_PORT=$(jq -c '.webappNodePort'  <<< $specs)
+      if [[ $WEBAPP_NODE_PORT == "null" ]] || ! [[ $WEBAPP_NODE_PORT =~ ^[0-9]+$ ]] ; then
+        export WEBAPP_NODE_PORT=30088
+      fi
 
       # Print the configuration to the console (for logs)
       echo "===== DEPLOYMENT CONFIGURATION ====="
@@ -65,8 +70,11 @@ else
       echo "KAFKA REPLICA:     $KAFKA_REPLICA_SET"
       echo "BBDATA REPLICA:    $BBDATA_REPLICA_SET"
       echo "CASSANDRA SC:      $CASSANDRA_STORAGECLASS_NAME"
+      echo "BBDATA NODE PORT:  $BBDATA_NODE_PORT"
+      echo "WEBAPP NODE PORT:  $WEBAPP_NODE_PORT"
+      echo "NAMESPACE:         $namespace"
 
-      # Get the path of the scripts folder
+      # Get the path of the script folder
       SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )/../scripts"
 
       # Call all the scripts and exit in case of failure

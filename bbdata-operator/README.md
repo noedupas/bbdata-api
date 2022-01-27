@@ -27,12 +27,14 @@ You can edit `bbdata-deploy.yml` spec in order to deploy an application matching
 - `kafkaReplica`: The maximum amount of Kafka/Zookeper replica (those componants are auto-scaled).
 - `bbdataReplica`: The amount of BBData API replica, which means the amount of Spring API replica.
 - `cassandraStorageClass`: The name of the Kubernetes StorageClass used by cassandra (default value: the name of the 1st StorageClass found). See more: [Cass-operator](https://github.com/k8ssandra/cass-operator#creating-a-storage-class), [Kubernetes](https://kubernetes.io/docs/concepts/storage/storage-classes/)
+- `bbdataNodePort`: The port forwarded to access the BBData API from outside the kubernetes cluster (default: 30080)
+- `webappNodePort`: The port forwarded to access the Node.js WebApp from outside the kubernetes cluster (default: 30088)
 
 Once all is set, run:
 
 ```
 $ kubectl apply -f bbdata-operator.yml
-$ kubectl apply -f bbdata-operator.yml
+$ kubectl apply -f bbdata-deploy.yml
 ```
 
 ## Logging
@@ -66,5 +68,8 @@ Available status:
 ```
 $ kubectl delete BBData <BBDATA_NAME>
 $ kubectl delete ns/bbdata-operator
+$ kubectl delete ns/cass-operator
+$ kubectl delete ns/cert-manager
+$ kubectl delete ns/kafka
 $ docker rmi "registry.mycompany.com/bbdata-operator:v1"
 ```

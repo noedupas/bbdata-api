@@ -34,7 +34,7 @@ metadata:
 spec:
   ports:
     - name: "8088"
-      nodePort: 30088
+      nodePort: NODE_PORT #will be modified by the deployment script
       port: 8088
       targetPort: 8088
   selector:
