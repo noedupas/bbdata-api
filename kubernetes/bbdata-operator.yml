@@ -68,6 +68,8 @@ spec:
                   type: integer
                 webappNodePort:
                   type: integer
+                kafkaNamespace:
+                  type: string
   scope: Namespaced
   names:
     plural: bbdata

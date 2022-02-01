@@ -14,6 +14,7 @@ sed -i "s/BBDATA_REPLICA_SIZE/$BBDATA_REPLICA_SET/" "$FILEPATH/deployment_deploy
 sed -i "s/CASS_USERNAME/$CASS_USER/" "$FILEPATH/deployment_deploy.yml"
 sed -i "s/CASS_PASSWORD/$CASS_PASS/" "$FILEPATH/deployment_deploy.yml"
 sed -i "s/NAMESPACE/$namespace/" "$FILEPATH/deployment_deploy.yml"
+sed -i "s/KAFKA_NS/$KAFKA_NAMESPACE/" "$FILEPATH/deployment_deploy.yml"
 sed -i "s/NODE_PORT/$BBDATA_NODE_PORT/" "$FILEPATH/deployment_deploy.yml"
 
 # Deploy the Spring BBData API and wait for it to be ready

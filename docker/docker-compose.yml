@@ -28,7 +28,7 @@ services:
 
   ### DATABASES ###
   cassandra:
-    build: ./components/cassandra
+    build: ./cassandra
     container_name: bbCassandra
     volumes:
       - .containers/cassandra:/var/lib/cassandra
@@ -44,7 +44,7 @@ services:
   #     - BITNAMI_DEBUG=1
   #   volumes:
   #     - .containers/cassandra:/var/lib/cassandra
-  #     - ./components/cassandra/bootstrap_data:/docker-entrypoint-initdb.d
+  #     - ./cassandra/bootstrap_data:/docker-entrypoint-initdb.d
   #   networks:
   #     - bb-network
 
@@ -61,7 +61,7 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     volumes:
       - .containers/mysql:/var/lib/mysql
-      - ./components/mysql/sql:/docker-entrypoint-initdb.d
+      - ./mysql/sql:/docker-entrypoint-initdb.d
     networks:
       - bb-network
 
@@ -95,7 +95,7 @@ services:
       - zookeeper
 
   # kafka-cli:
-  #   build: './components/kafka-cli/'
+  #   build: './kafka-cli/'
   #   container_name: bbKafka-cli
   #   environment:
   #     - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181

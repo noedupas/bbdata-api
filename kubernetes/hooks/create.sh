@@ -38,7 +38,7 @@ else
         export CASSANDRA_REPLICA_SET=$DEFAULT_REPLICA_SET
       fi
 
-      export CASSANDRA_STORAGECLASS_NAME=$(jq -c '.cassandraStorageClass'  <<< $specs)
+      export CASSANDRA_STORAGECLASS_NAME=$(jq -c '.cassandraStorageClass'  <<< $specs | tr -d '"')
       if [[ $CASSANDRA_STORAGECLASS_NAME == "null" ]] ; then
         export CASSANDRA_STORAGECLASS_NAME=$(kubectl get sc -o "jsonpath={.items[0].metadata.name}")
       fi
@@ -63,6 +63,11 @@ else
         export WEBAPP_NODE_PORT=30088
       fi
 
+      export KAFKA_NAMESPACE=$(jq -c '.kafkaNamespace'  <<< $specs | tr -d '"')
+      if [[ $KAFKA_NAMESPACE == "null" ]] ; then
+        export KAFKA_NAMESPACE=$namespace
+      fi  
+
       # Print the configuration to the console (for logs)
       echo "===== DEPLOYMENT CONFIGURATION ====="
       echo "DEFAULT REPLICA:   $DEFAULT_REPLICA_SET"
@@ -73,6 +78,7 @@ else
       echo "BBDATA NODE PORT:  $BBDATA_NODE_PORT"
       echo "WEBAPP NODE PORT:  $WEBAPP_NODE_PORT"
       echo "NAMESPACE:         $namespace"
+      echo "KAFKA NAMESPACE:   $KAFKA_NAMESPACE"
 
       # Get the path of the script folder
       SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )/../scripts"

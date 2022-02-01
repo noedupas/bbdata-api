@@ -15,26 +15,6 @@ fi
 # Get the template path for cassandra
 FILEPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )/../templates/cassandra"
 
-# Deploy cert-manager on the Kubernetes environnment as this is required for the cass-operator to work
-kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.5.3/cert-manager.yaml
-
-# Wait for cert-manager deployment
-COUNT=$(expr $(kubectl -n cert-manager get pods | wc -l) - 2)
-for i in `seq 0 $COUNT`
-do
-    NAME=$(kubectl -n cert-manager get pods -o "jsonpath={.items[$i].metadata.name}")
-    kubectl -n cert-manager wait --for=condition=ready pod $NAME
-done
-sleep 5
-
-# Deploy the cass-operator on the Kubernetes environnment and wait for the deployment to be done
-kubectl apply -k github.com/k8ssandra/cass-operator/config/deployments/default
-NAME=$(kubectl -n cass-operator get pods -o "jsonpath={.items[0].metadata.name}")
-kubectl -n cass-operator wait --for=condition=ready pod $NAME
-
-# Deploy the cass-operator default cluster
-kubectl apply -k github.com/k8ssandra/cass-operator/config/deployments/cluster
-
 # Change values in the dc1 file to the env variable given values
 cp "$FILEPATH/dc1.yml" "$FILEPATH/dc1_deploy.yml"
 sed -i "s/CASS_REPLICA_SIZE/$CASSANDRA_REPLICA_SET/" "$FILEPATH/dc1_deploy.yml"
