@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: schema
+spec:
+  ttlSecondsAfterFinished: 10
+  template:
+    spec:
+      containers:
+        - name: schema
+          image: vaishalinicky/cqlshimage
+          env:
+            - name: CASS_USER
+              value: USER_VALUE #will be modified by the deployment script
+            - name: CASS_PASS
+              value: PASS_VALUE #will be modified by the deployment script
+            - name: CASS_HOST
+              value: HOST_VALUE #will be modified by the deployment script
+          command: ["bin/bash"]
+          args:
+            - -c
+            - >-
+              cqlsh -u '$(CASS_USER)' -p '$(CASS_PASS)' -e "CREATE SCHEMA bbdata2 WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 3 };" $(CASS_HOST) &&
+              cqlsh -u '$(CASS_USER)' -p '$(CASS_PASS)' -e "CREATE TABLE bbdata2.raw_values (object_id int, timestamp timestamp, comment text, month text, value text, PRIMARY KEY ((object_id, month), timestamp)) WITH CLUSTERING ORDER BY (timestamp ASC);" $(CASS_HOST) &&
+              cqlsh -u '$(CASS_USER)' -p '$(CASS_PASS)' -e "CREATE TABLE bbdata2.aggregations (minutes int, object_id int, date text, timestamp timestamp, last float, last_ts bigint, min float, max float, sum float, mean float, count int, k float, k_sum float, k_sum_2 float, std float, PRIMARY KEY ((minutes, object_id, date), timestamp)) WITH CLUSTERING ORDER BY (timestamp DESC);" $(CASS_HOST) &&
+              cqlsh -u '$(CASS_USER)' -p '$(CASS_PASS)' -e "CREATE TABLE bbdata2.objects_stats_counter (object_id int, n_reads counter, n_values counter, PRIMARY KEY (object_id));" $(CASS_HOST) &&
+              cqlsh -u '$(CASS_USER)' -p '$(CASS_PASS)' -e "CREATE TABLE bbdata2.objects_stats (object_id int, avg_sample_period float, last_ts timestamp, PRIMARY KEY (object_id));" $(CASS_HOST)
+          imagePullPolicy: Always
+      restartPolicy: Never
+  backoffLimit: 4

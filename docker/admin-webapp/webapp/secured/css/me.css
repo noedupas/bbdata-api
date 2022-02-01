@@ -1,0 +1,29 @@
+table.ui.profile {
+    margin: auto;
+    width:auto;
+    text-align: left;
+}
+
+table.ui.profile  td:first-child {
+    font-weight: bold;
+    padding-right:50px;
+    text-align: right;
+}
+
+table.ui.apikeys {
+    margin: auto !important;
+    min-width: 400px;
+}
+
+table.ui.apikeys tr.old {
+    font-style: italic;
+    color: darkred;
+}
+
+table.ui.apikeys td.readOnly-true {
+    color: #ff0000;
+}
+
+table.ui.apikeys td.readOnly-false {
+    color: #008000;
+}

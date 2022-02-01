@@ -1,0 +1,122 @@
+version: '3'
+
+services:
+
+  ### API ###
+  spring:
+    image: bukibarak/bbdata-spring:latest
+    container_name: bbSpringAPI
+    environment:
+      WAIT_TIMEOUT: 150
+      WAIT_SLEEP_INTERVAL: 5
+      WAIT_HOSTS: zookeeper:2181,kafka:9092,cassandra:9042,mysql:3306
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/bbdata2?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      #SPRING_DATASOURCE_USERNAME: bbdata-admin
+      #SPRING_DATASOURCE_PASSWORD: bbdata
+      SPRING_DATA_CASSANDRA_CONTACT-POINTS: cassandra
+      SPRING_KAFKA_PRODUCER_BOOTSTRAP-SERVERS: kafka:9092
+      #MANAGEMENT_SERVER_PORT: 9999
+    ports:
+      - '8080:8080'
+    networks:
+      - bb-network
+    depends_on:
+      - kafka
+      - cassandra
+      - mysql
+
+
+  ### DATABASES ###
+  cassandra:
+    build: ./cassandra
+    container_name: bbCassandra
+    volumes:
+      - .containers/cassandra:/var/lib/cassandra
+    networks:
+      - bb-network
+  # cassandra:
+  #   image: bitnami/cassandra:3.11
+  #   container_name: bbCassandra
+  #   environment:
+  #     - CASSANDRA_SEEDS=cassandra
+  #     - CASSANDRA_PASSWORD_SEEDER=yes
+  #     - CASSANDRA_PASSWORD=cassandra
+  #     - BITNAMI_DEBUG=1
+  #   volumes:
+  #     - .containers/cassandra:/var/lib/cassandra
+  #     - ./cassandra/bootstrap_data:/docker-entrypoint-initdb.d
+  #   networks:
+  #     - bb-network
+
+  mysql:
+    image: mysql:8
+    container_name: bbMySQL
+    restart: always
+    environment:
+      LANG: C.UTF-8
+      MYSQL_ROOT_PASSWORD: bbdata
+      MYSQL_USER: bbdata-admin
+      MYSQL_PASSWORD: bbdata
+      MYSQL_DATABASE: bbdata2
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - .containers/mysql:/var/lib/mysql
+      - ./mysql/sql:/docker-entrypoint-initdb.d
+    networks:
+      - bb-network
+
+  ### PROCESSING ###
+  zookeeper:
+    image: bitnami/zookeeper:3.7
+    container_name: bbZooKeeper
+    environment:
+      ALLOW_ANONYMOUS_LOGIN: "yes"
+    networks:
+      - bb-network
+    volumes:
+      - .containers/zookeeper:/bitnami/zookeeper
+
+  kafka:
+    image: bitnami/kafka:3
+    restart: always
+    container_name: bbKafka
+    environment:
+      ALLOW_ANONYMOUS_LOGIN: "yes"
+      KAFKA_BROKER_ID: 1
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+      - .containers/kafka:/bitnami/kafka
+    networks:
+      - bb-network
+    depends_on:
+      - zookeeper
+
+  # kafka-cli:
+  #   build: './kafka-cli/'
+  #   container_name: bbKafka-cli
+  #   environment:
+  #     - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+  #     - WAIT_HOSTS=zookeeper:2181,kafka:9092
+  #   networks:
+  #     - bb-network
+  #   depends_on:
+  #     - kafka
+
+  ### WEBAPP ###
+  nodejs:
+    image: bukibarak/bbdata-webapp:latest
+    container_name: bbAdminWebApp
+    environment:
+      API_SERVER_HOST: http://spring:8080
+    ports:
+      - '8088:8088'
+    networks:
+      - bb-network
+
+### NETWORKS ###
+networks:
+  bb-network:
+    driver: bridge

@@ -1,0 +1,32 @@
+<div>Add users by selecting them from the dropdown menu. To make one user an administrator,
+    click on the <i class="icon user blue"></i> icon so it becomes <i class="icon protect blue"></i>.
+    When you are done, click on <em>finish</em> to save changes.
+</div>
+<br/>
+<semantic-dropdown class="ui floating dropdown labeled icon button">
+    <i class="add user icon"></i>
+    <span>Add Users</span>
+    <div class="menu">
+        <div class="ui icon search input">
+            <i class="search icon"></i>
+            <input type="text" placeholder="Filter users...">
+        </div>
+        <div class="divider"></div>
+        <div class="scrolling menu">
+            <div class="item" ng-repeat="u in inputs.users"
+                ng-click="inputs.usersToAdd.indexOf(u) === -1 && inputs.usersToAdd.push(u)">{{u.name}}</div>
+        </div>
+    </div>
+</semantic-dropdown> (click on a name to add)
+
+<div style="clear: both"></div>
+<ul ng-repeat="u in inputs.usersToAdd as datasource">
+    <li class="ui">
+        <i class="right floated delete icon red" ng-click="datasource.splice($index, 1)"></i>
+        <i ng-show="!u.admin" class="icon user blue"
+           ng-click="u.admin = true"></i>
+        <i ng-show="u.admin" class="icon protect blue"
+           ng-click="u.admin = false"></i>
+        {{u.name}} - {{u.email}}
+    </li>
+</ul>

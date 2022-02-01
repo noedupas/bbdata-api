@@ -1,0 +1,31 @@
+<form name="form.addform" class="ui form" novalidate>
+    <!--name-->
+    <div class="ui labeled input">
+        <div class="ui label">name</div>
+        <input type="text" ng-model="inputs.object.name" required>
+    </div>
+
+    <!--description-->
+    <div class="field">
+        <label>Description</label>
+        <textarea ng-model="inputs.object.description" rows="2"></textarea>
+    </div>
+
+    <!--user group-->
+    <div class="field">
+        <label>Ownership:</label>
+        <select class="ui search dropdown" ng-model="inputs.object.owner" required
+                ng-options="g.id as g.name for g in inputs.adminGroups">
+        </select>
+    </div>
+
+    <!--unit-->
+    <div class="field">
+        <label>Unit:</label>
+        <select class="ui search dropdown" ng-model="inputs.object.unitSymbol" required
+                ng-options="u.symbol as u.name for u in inputs.units">
+        </select>
+    </div>
+
+    {{inputs.init()}}
+</form>

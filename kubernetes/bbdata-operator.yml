@@ -1,0 +1,91 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bbdata-operator
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: bbdata-operator-acc
+  namespace: bbdata-operator
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: access-all-ressources
+  namespace: bbdata-operator
+rules:
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["*"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: access-all-ressources
+  namespace: bbdata-operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: access-all-ressources
+subjects:
+  - kind: ServiceAccount
+    name: bbdata-operator-acc
+    namespace: bbdata-operator
+
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: bbdata.bukibarak.ch
+spec:
+  group: bukibarak.ch
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                defaultReplica:
+                  type: integer
+                cassandraReplica:
+                  type: integer
+                kafkaReplica:
+                  type: integer
+                bbdataReplica:
+                  type: integer
+                cassandraStorageClass:
+                  type: string
+                bbdataNodePort:
+                  type: integer
+                webappNodePort:
+                  type: integer
+                kafkaNamespace:
+                  type: string
+  scope: Namespaced
+  names:
+    plural: bbdata
+    singular: bbdata
+    kind: BBData
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: bbdata-operator
+  namespace: bbdata-operator
+spec:
+  containers:
+  - name: bbdata-operator
+    image: bukibarak/bbdata-operator:v1
+    imagePullPolicy: Always
+    env:
+  serviceAccountName: bbdata-operator-acc

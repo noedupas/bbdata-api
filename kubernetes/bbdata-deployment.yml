@@ -1,0 +1,12 @@
+apiVersion: "bukibarak.ch/v1"
+kind: BBData
+metadata:
+  name: bbdata
+  annotations:
+    status: "Not deployed"
+spec:
+  defaultReplica: 1
+  cassandraStorageClass: local-path
+  kafkaNamespace: kafka
+  bbdataNodePort: 30080
+  webappNodePort: 30081

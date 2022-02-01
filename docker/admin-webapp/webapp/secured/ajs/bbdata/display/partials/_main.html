@@ -1,0 +1,75 @@
+<span ng-include src="'/secured/ajs/bbdata/display/partials/_sidebar.html'"></span>
+
+<semantic-toggle-button class="basic"
+                        id="toggleSidebar"
+                        toggle-text="show sidebar:hide sidebar"
+                        style="margin-bottom: 20px"
+                        toggle-class="blue:purple"></semantic-toggle-button>
+
+<semantic-toggle-button class="basic"
+                        ng-show="ctrl.graph.chart"
+                        toggle-text="yAxis multiple:yAxis shared"
+                        ng-model="ctrl.shareAxis"
+                        ng-click="ctrl.toggleShareAxis()"
+                        toggle-class="orange:red"></semantic-toggle-button>
+
+<semantic-toggle-button class="basic"
+                        ng-show="ctrl.graph.chart"
+                        toggle-text="no SMA:  SMA  "
+                        ng-model="ctrl.graph.sma"
+                        ng-click="ctrl.graph.smaToggled()"
+                        semantic-popup="hover"
+                        data-content="Simple Moving Average"
+                        toggle-class="green:olive"></semantic-toggle-button>
+
+
+<button class="ui button basic blue"
+        ng-show="ctrl.graph.chart"
+        ng-click="ctrl.exportCSV()">
+    export to CSV
+</button>
+
+
+<div ng-show="ctrl.graph.chart && ctrl.graph.sma" style="display:inline-block; margin-left: 10px">
+    <div class="ui transparent input" ng-init="smaPeriod = ctrl.graph.smaPeriod">
+        <label for="periodInput"><i>SMA period:</i></label>
+        <input type="number" id="periodInput" min="1" max="20"
+               ng-model="smaPeriod"
+               ng-change="ctrl.graph.smaPeriodChanged(smaPeriod)"/>
+    </div>
+</div>
+
+
+<button class="ui button right floated" ng-click="ctrl.newWindow()">
+    new window
+</button>
+
+
+<div class="ui message" ng-show="ctrl.modifiedAxis != null">
+    <i class="close icon" ng-click="ctrl.modifiedAxis = null"></i>
+    <div class="header">
+        <h3>yAxis of {{ctrl.modifiedAxis.title}} </h3>
+    </div>
+    <form name="axisForm">
+        <div class="ui input">
+            <input type="number" ng-model="ctrl.modifiedAxis.min"
+                   ng-max="ctrl.modifiedAxis.max" ng-change="ctrl.applyAxisChanges()" step="10"
+                   required/>
+        </div>
+        =>
+        <div class="ui input">
+            <input type="number" step="10" ng-model="ctrl.modifiedAxis.max"
+                   ng-min="ctrl.modifiedAxis.min" ng-change="ctrl.applyAxisChanges()" required/>
+        </div>
+
+        <div class="ui button" style="margin-left:30px" ng-click="ctrl.applyAxisChanges(true)">
+            Reset
+        </div>
+    </form>
+
+</div>
+
+
+<div style="position:relative; width:100%; height: 70vh">
+    <div id="graphContainer" style="height:100%; width:100%"></div>
+</div>

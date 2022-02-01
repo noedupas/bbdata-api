@@ -1,0 +1,83 @@
+/* *****************************************************************
+ * accordion
+ * ****************************************************************/
+
+#objects-accordion {
+    margin: 20px auto;
+    min-width: 80%;
+}
+
+.table.object-details {
+    font-size: .9em;
+}
+
+.table.object-details td:first-child {
+    font-weight: bold;
+}
+
+@media only screen and (min-width: 767px) {
+    .table.object-details td:first-child {
+        text-align: right;
+    }
+}
+
+/*title and buttons*/
+
+#objects-accordion .title {
+    /*background-color: #efefef;*/
+}
+
+#objects-accordion .title div {
+    display: inline-block;
+}
+
+#objects-accordion .title > div {
+    width: 80%;
+}
+
+#objects-accordion .title > div + div {
+    width: 19%;
+    text-align: right;
+}
+
+/*icons*/
+#objects-accordion button {
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+#objects-accordion .token-accordion table{
+    width: 80%;
+    margin: auto;
+}
+
+#objects-accordion .token-accordion .ng-hide{
+    display:none !important;
+}
+
+/*#objects-accordion .title button:hover .remove{*/
+/*color: #db2828!important;*/
+/*}*/
+
+/* *****************************************************************
+ * pagination
+ * ****************************************************************/
+
+dir-pagination-controls.objectsPage {
+    text-align: center;
+}
+
+.objectsPage ul.pagination li {
+    text-align: center;
+    display: inline-block;
+    border: 1px solid #eee;
+}
+.objectsPage ul.pagination li a{
+    display: inline-block;
+    padding: 5px;
+    min-width: 45px;
+}
+
+.objectsPage ul.pagination li.active {
+    border:1px solid rgb(65, 131, 196);
+}

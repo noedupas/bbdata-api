@@ -1,2 +1,5 @@
+# Container volumes
+.containers
+
 # ignoring MacOS Desktop Services Store files
 .DS_Store

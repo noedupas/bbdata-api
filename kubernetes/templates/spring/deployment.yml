@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring
+spec:
+  selector:
+    matchLabels:
+      app: spring
+  replicas: BBDATA_REPLICA_SIZE #will be modified by the deployment script
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: spring
+    spec:
+      containers:
+        - image: bukibarak/bbdata-spring:latest
+          name: spring
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:mysql://mysql:3306/bbdata2?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&allowPublicKeyRetrieval=true&serverTimezone=UTC
+            - name: SPRING_DATA_CASSANDRA_CONTACT-POINTS
+              value: cluster1-datacenter1-service
+            - name: SPRING_DATA_CASSANDRA_USERNAME
+              value: CASS_USERNAME #will be modified by the deployment script
+            - name: SPRING_DATA_CASSANDRA_PASSWORD
+              value: CASS_PASSWORD #will be modified by the deployment script
+            - name: SPRING_KAFKA_PRODUCER_BOOTSTRAP-SERVERS
+              value: my-cluster-NAMESPACE-kafka-bootstrap.KAFKA_NS:9092
+            - name: WAIT_HOSTS
+              value: cluster1-datacenter1-service:9042,my-cluster-NAMESPACE-kafka-bootstrap.KAFKA_NS:9092,mysql:3306
+            - name: WAIT_SLEEP_INTERVAL
+              value: "5"
+            - name: WAIT_TIMEOUT
+              value: "150"
+          ports:
+            - containerPort: 8080
+              name: spring
+      restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: spring
+  name: spring
+spec:
+  ports:
+    - name: "8080"
+      nodePort: NODE_PORT #will be modified by the deployment script
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: spring
+  type: LoadBalancer
