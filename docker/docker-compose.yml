@@ -119,7 +119,7 @@ services:
   mosquitto:
     image: eclipse-mosquitto:2.0.15
     container_name: bbMosquitto
-    restart: unless-stopped
+    restart: always
     networks:
       - bb-network
     volumes:
@@ -129,6 +129,14 @@ services:
     ports:
       - 1883:1883
       - 9001:9001
+
+  ### Collector - bridge between Mosquitto broker and BBData API ###
+  collector:
+    build: ./collector
+    container_name: bbCollector
+    restart: always
+    networks:
+      - bb-network
 
 ### NETWORKS ###
 networks:
