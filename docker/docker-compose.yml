@@ -25,7 +25,6 @@ services:
       - cassandra
       - mysql
 
-
   ### DATABASES ###
   cassandra:
     build: ./cassandra
@@ -115,6 +114,21 @@ services:
       - '8088:8088'
     networks:
       - bb-network
+
+  ### Mosquitto MQTT Broker ###
+  mosquitto:
+    image: eclipse-mosquitto:2.0.15
+    container_name: bbMosquitto
+    restart: unless-stopped
+    networks:
+      - bb-network
+    volumes:
+      - .containers/mosquitto/config/:/mosquitto/config/:ro
+      - .containers/mosquitto/log/:/mosquitto/log/
+      - .containers/mosquitto/data/:/mosquitto/data/
+    ports:
+      - 1883:1883
+      - 9001:9001
 
 ### NETWORKS ###
 networks:
