@@ -1,6 +1,17 @@
 K8S-BBDATA - Kubernetization of a streaming data processing platform
 ==========
 
+
+## PS5 2022/2023 - modifications apportés (Noé Dupasquier)
+Le but de ce repository est de réaliser un Proof of Concept de l'intégration de MQTT dans BBData. Pour réaliser ceci, les changements suivants vont être effectués:
+* Quelques adaptations dans les services Docker déjà existants (correction de bugs)
+* Ajout d'un service Mosquitto dans le docker-compose de la partie Docker
+* Ajout d'un service "collecteur", qui est une adaptation du logiciel "Sensbox", permettant de faire la passerelle entre les données reçues sur le broker et l'API de BBData
+
+Voici un diagramme de composant représentant le but à atteindre lors de ce Proof Of Concept
+![]()
+
+
 Projet de semestre 5 - 2021/2022
 ---------------
 
