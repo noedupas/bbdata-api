@@ -25,7 +25,6 @@ services:
       - cassandra
       - mysql
 
-
   ### DATABASES ###
   cassandra:
     build: ./cassandra
@@ -113,6 +112,29 @@ services:
       API_SERVER_HOST: http://spring:8080
     ports:
       - '8088:8088'
+    networks:
+      - bb-network
+
+  ### Mosquitto MQTT Broker ###
+  mosquitto:
+    image: eclipse-mosquitto:2.0.15
+    container_name: bbMosquitto
+    restart: always
+    networks:
+      - bb-network
+    volumes:
+      - .containers/mosquitto/config/:/mosquitto/config/:ro
+      - .containers/mosquitto/log/:/mosquitto/log/
+      - .containers/mosquitto/data/:/mosquitto/data/
+    ports:
+      - 1883:1883
+      - 9001:9001
+
+  ### Collector - bridge between Mosquitto broker and BBData API ###
+  collector:
+    build: ./collector
+    container_name: bbCollector
+    restart: always
     networks:
       - bb-network
 

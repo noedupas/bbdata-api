@@ -1,0 +1,16 @@
+[
+    {
+        "sensor": "SB_TEST",
+        "config": [
+            {
+                "topic": "zwave/HEIAFR/multisensor1/49/0/Air_temperature",
+                "bbdata_object": {
+                    "name": "sensbox/test/ms-01/temperature",
+                    "object_id": 13371,
+                    "object_token": "2a128f4478dc2c2df9241e8e9789eaeb",
+                    "sensor_type": "multisensor"
+                }
+            }
+        ]
+    }
+]

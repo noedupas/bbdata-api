@@ -10,5 +10,9 @@ COPY bootstrap_data/import_data.cql /docker-entrypoint-initdb.d/02.cql
 
 COPY entrypoint.sh /
 
+# Remove trailing \r character
+# Solve the error: bash: '\r': command not found
+RUN sed -i 's/\r$//' entrypoint.sh
+
 ENTRYPOINT ["/entrypoint.sh"]
 #CMD ["cassandra", "-f"]

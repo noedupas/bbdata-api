@@ -1,0 +1,6 @@
+{
+    "bbdata_instance": "http://spring:8080",
+    "mqtt_hostname": "mosquitto",
+    "mqtt_username": "noedu",
+    "mqtt_password": "ps5-mosquitto"
+}
