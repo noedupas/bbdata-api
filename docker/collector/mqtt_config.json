@@ -1,5 +1,0 @@
-{
-    "mqtt_hostname": "localhost",
-    "mqtt_username": "noedu",
-    "mqtt_password": "ps5-mosquitto"
-}
