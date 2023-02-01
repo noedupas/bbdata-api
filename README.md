@@ -8,9 +8,6 @@ Le but de ce repository est de réaliser un Proof of Concept de l'intégration d
 * Ajout d'un service Mosquitto dans le docker-compose de la partie Docker
 * Ajout d'un service "collecteur", qui est une adaptation du logiciel "Sensbox", permettant de faire la passerelle entre les données reçues sur le broker et l'API de BBData
 
-Voici un diagramme de composant représentant le but à atteindre lors de ce Proof Of Concept
-![]()
-
 
 Projet de semestre 5 - 2021/2022
 ---------------
